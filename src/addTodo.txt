@@ -1,0 +1,195 @@
+import React, { useState, useRef, useEffect, MouseEvent } from "react";
+import { useGlobalContext, Todo } from "../GlobalContext/GlobalContext";
+import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
+import 'dayjs/locale/ru.js';
+import localizedFormat from 'dayjs/plugin/localizedFormat';
+import { getTodos } from "../../firebase";
+import { validTodo } from "../../help.functions";
+
+import styles from "./TodoAdd.module.scss";
+import { update } from "firebase/database";
+
+
+interface dayType {
+   year: string,
+   month: string,
+   day: string
+}
+
+interface TodoAddProps {
+   itemId: number,
+   todoUpdateType: string,
+   index: number,
+   todo: Todo
+}
+
+export const TodoAdd: React.FC<TodoAddProps> = ({ todoUpdateType, itemId, index, todo }) => {
+   const { todos, setTodos, writeTodos, updateTodo } = useGlobalContext();
+
+   let fullDate = dayjs()
+   /*const [dayString, setDayString] =
+      useState<dayType>({ year: String(now.getFullYear()), month: String(now.getMonth()), day: String(now.getDate()) })*/
+
+   if (todoUpdateType == 'edit') {
+
+      fullDate = dayjs(new Date(todos[index]?.endDate))
+      console.log(fullDate, index)
+   }
+
+   const [date, setDate] = useState<string>(String(dayjs(fullDate).format('D')))
+   const [month, setMonth] = useState<string>(String(dayjs(fullDate).format('MM')))
+   const [year, setYear] = useState<string>(String(dayjs(fullDate).format('YYYY')))
+
+   const [newTodo, setNewTodo] = useState<Todo>({ id: todos.length, title: '', description: '', fileUrl: '', endDate: '', isComplated: false });
+   const [fileName, setFileName] = useState<string>('')
+   const [file, setFile] = useState<FileList | null>()
+   const [addError, setAddError] = useState<boolean>(false)
+   const inputTitle = useRef<HTMLInputElement>(null)
+   const submitButton = useRef<HTMLButtonElement>(null)
+   const [update, setUpdate] = useState<number>(0)
+   /*useEffect(() => {
+      async function asyncTodos() {
+         const todoDB = await getTodos()
+         setTodos(validTodo(todoDB))
+      }
+      asyncTodos()
+      console.log(todos, 'addrender')
+   }, [])*/
+
+
+   console.log(todo)
+   console.log(date, month, year)
+   const changeHendlerTitle = (el: React.ChangeEvent<HTMLInputElement>) => {
+      setAddError(false)
+      let newValue = { ...newTodo, title: el.target.value };
+      setNewTodo(newValue)
+   }
+
+   const changeHendlerDescription = (el: React.ChangeEvent<HTMLInputElement>) => {
+      let newValue = { ...newTodo, description: el.target.value };
+      setNewTodo(newValue)
+   }
+
+   const changeHendlerDay = (el: React.ChangeEvent<HTMLSelectElement>) => {
+      /*let newDay = { ...dayString, day: el.target.value }
+      setDayString(newDay)*/
+      setDate(el.target.value)
+
+   }
+
+   const changeHendlerYear = (el: React.ChangeEvent<HTMLSelectElement>) => {
+      /*let newYear = { ...dayString, year: el.target.value }
+      setDayString(newYear)*/
+      setYear(el.target.value)
+   }
+
+   const changeHendlerMonth = (el: React.ChangeEvent<HTMLSelectElement>) => {
+      /*let newMonth = { ...dayString, month: el.target.value }
+      setDayString(newMonth)*/
+      setMonth(el.target.value)
+   }
+   const changeHendlerFile = (el: React.ChangeEvent<HTMLInputElement>) => {
+      console.log(el)
+      setFileName(el.target.value)
+      setFile(el.target.files)
+      let newValue = { ...newTodo, fileUrl: el.target.value };
+      setNewTodo(newValue)
+   }
+   const clickHandler = (el: MouseEvent) => {
+      el.preventDefault();
+      const newDate = `${year}-${month}-${date}`;
+      newTodo.endDate = newDate;
+      setUpdate(update + 1)
+      if (todoUpdateType == 'add') {
+         const newId = todos[0].id + 1
+         if (newTodo.title == '') {
+            console.log(inputTitle?.current?.focus())
+            inputTitle?.current?.focus()
+            setAddError(true)
+         }
+         else {
+            writeTodos(newId, newTodo.title, newTodo.description, newTodo.endDate, newTodo.fileUrl, newTodo.isComplated, file)
+         }
+
+      }
+      if (todoUpdateType == 'edit') {
+
+         if (newTodo.title == '') {
+            newTodo.title = todos[index].title
+         }
+         if (newTodo.description == '') {
+            newTodo.description = todos[index].description
+         }
+         if (newTodo.endDate == '') {
+            newTodo.endDate = todos[index].endDate;
+         }
+         if (newTodo.fileUrl == '') {
+            newTodo.fileUrl = todos[index].fileUrl;
+         }
+
+         updateTodo(itemId, newTodo.title, newTodo.description, newTodo.endDate, newTodo.fileUrl, newTodo.isComplated, file)
+      }
+   }
+
+   return (
+      <form className="todoAdd">
+         <div className="form-row">
+            <label>
+               Название {todoUpdateType == "add" ? `*` : null} {update}
+            </label>
+
+            <input type="text" ref={inputTitle} className={addError ? `${styles.title} ${styles.error}` : `${styles.title}`} onChange={changeHendlerTitle} value={newTodo.title} />
+         </div>
+         <div className="form-row">
+            <label>
+               Описание
+            </label>
+            <input type="text" onChange={changeHendlerDescription} value={newTodo.description} />
+         </div>
+         <div className="form-row">
+            <label>
+               Прикрепить файл
+            </label>
+            <input type="file" onChange={changeHendlerFile} value={fileName} />
+         </div>
+         <div className="form-row">
+            <label>
+               Дата завершения
+            </label>
+            {date} {month}
+            <select value={date} onChange={changeHendlerDay}>
+               {(() => {
+                  const options = [];
+                  for (let i = 1; i <= 31; i++) {
+                     options.push(<option value={i} key={i}>{i}</option>);
+                  }
+                  return options;
+               })()}
+            </select>
+            <select value={Number(month)} onChange={changeHendlerMonth}>
+               {(() => {
+                  const options = [];
+                  for (let i = 1; i <= 12; i++) {
+                     options.push(<option value={i} key={i}>{i}</option>);
+                  }
+                  return options;
+               })()}
+            </select>
+            <select value={year} onChange={changeHendlerYear}>
+               {(() => {
+                  const options = [];
+                  const now = new Date()
+                  const nowYear = now.getFullYear()
+                  for (let i = nowYear; i <= nowYear + 4; i++) {
+                     options.push(<option value={i} key={i}>{i}</option>);
+                  }
+                  return options;
+               })()}
+            </select>
+         </div>
+         <button ref={submitButton} className="todoAdd__button" onClick={clickHandler} disabled={addError}> Add </button>
+      </form>
+
+   )
+}

@@ -1,0 +1,15 @@
+.item {
+   list-style-type: none;
+   display: flex;
+   justify-content: flex-start;
+   align-items: center;
+   border: 1px #ddd solid;
+   padding: 2rem;
+   &.late {
+      .name {
+         color: red;
+      }
+   }
+}
+
+
