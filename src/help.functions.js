@@ -35,6 +35,7 @@ export const validTodo = (todo) => {
          fileUrl: todo[key].fileUrl,
          endDate: todo[key].endDate,
          isComplated: todo[key].isComplated,
+         file: todo[key].file
 
       })
    }

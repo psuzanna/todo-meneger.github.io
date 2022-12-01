@@ -8,6 +8,7 @@ export interface Todo {
    fileUrl: string,
    endDate: string,
    isComplated: boolean,
+   file: FileList
 }
 
 export interface State {

@@ -1,0 +1,17 @@
+.content {
+   position: absolute;
+   left: 50%;
+   transform: translateX(-50%);
+   background: #ffffff;
+   padding: 20px;
+   border-radius: 10px;
+   border: 1px #e1e1e1 solid;
+   .close {
+      position: absolute;
+      right: 0px;
+      top: 0px;
+      font-size: 2rem;
+      color: #d7aaaa;
+      background: none;
+   }
+}

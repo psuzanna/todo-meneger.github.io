@@ -1,3 +1,11 @@
-.TodoEdit {
- position: relative;
+.edit {
+   .index {
+      display: inline-flex;
+      width: 30px;
+      height: 30px;
+      align-items: center;
+      justify-content: center;
+      background: #59c53e;
+      color: white;
+   }
 }

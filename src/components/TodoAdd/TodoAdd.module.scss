@@ -1,9 +1,11 @@
 .todoAdd {
    max-width: 600px;
-   margin: 0 auto;
-   .row {
-      margin-top: 1rem;
-   }
+   display: inline-flex;
+    flex-direction: column;
+    padding: 15px;
+    background: #e1e1e1;
+    border-radius: 10px;
+
 }
 
 .title {

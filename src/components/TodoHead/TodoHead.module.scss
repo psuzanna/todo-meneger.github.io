@@ -1,0 +1,15 @@
+.header {
+   display: grid;
+   grid-template-columns:1fr 2fr ;
+   justify-items: center;
+    align-items: center;
+    gap: 50px;
+    margin-bottom: 50px;
+}
+
+.logo {
+   img {
+      max-width: 100%;
+      width: auto;
+   }
+}

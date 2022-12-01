@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Todo, useGlobalContext } from "../GlobalContext/GlobalContext";
 import { Modal } from "../Modal/Modal";
 import dayjs from 'dayjs';
@@ -18,9 +18,11 @@ dayjs.extend(localizedFormat)
 export const TodoItem: React.FC<TodoItemProps> = ({ todo, index }) => {
    const day = dayjs(new Date(todo.endDate));
    const nowDay = dayjs();
-   const { removeTodo } = useGlobalContext();
-   const [showModal, setShowModal] = useState(false)
+   const { removeTodo, updateTodo } = useGlobalContext();
+   const [showModal, setShowModal] = useState(false);
+   const [status, setStatus] = useState(todo.isComplated)
 
+   console.log(todo)
    const removeHandler = (el: React.MouseEvent<HTMLButtonElement>) => {
       el.preventDefault();
       removeTodo(todo.id)
@@ -31,42 +33,67 @@ export const TodoItem: React.FC<TodoItemProps> = ({ todo, index }) => {
       setShowModal(!showModal)
    }
 
-   return (
-      <li className={day.diff(nowDay, 's') < 0 && !todo.isComplated ? `${styles.item} ${styles.late}` : `${styles.item}`}>
 
+   useEffect(() => {
+      todo.isComplated = status
+      updateTodo(todo)
+   }, [status])
+
+   return (
+      <li className={day.diff(nowDay, 's') < 0 && !todo.isComplated ? `${styles.item} ${styles.late}` : todo.isComplated ? `${styles.item} ${styles.isComplated}` : `${styles.item}`}>
 
          <div className={styles.inner}>
-            <span className={styles.num}>{index}</span>
+
             <div className={styles.head}>
-               <h2 className={styles.name}>
+               <span className={styles.num}>{index + 1}</span>
+               <h2 className={styles.title}>
                   {todo.title}
                </h2>
-               <span>{dayjs(day, 'ДД МММ. ГГГГ', 'ru').format('LL')} </span>
-            </div>
-
-            <p className={styles.desc}>{todo.description}</p>
-
-            <a href={todo?.fileUrl} className={todo.fileUrl ? `styles.todoItem__file showFile` : `styles.todoItem__file`}>Файл</a>
-
-         </div>
-         <div className={styles.editWrapper}>
-            <div className="todoItem__controls">
                <span className={
                   todo.isComplated ? 'todoItem__edit isComplated' :
                      !todo.isComplated && day.diff(nowDay, 's') > 0 ? 'todoItem__edit isProcessed' :
                         !todo.isComplated && day.diff(nowDay, 's') < 0 ? `todoItem__edit isLate` :
                            'editControl'
                }>{
-                     todo.isComplated ? 'Завершён' :
-                        !todo.isComplated && day.diff(nowDay, 's') >= 0 ? 'В работе' : 'Дата истекла'
+                     todo.isComplated ?
+                        <span className="isComplated">
+                           <i className="fa-solid fa-check"></i>
+                        </span> :
+                        !todo.isComplated && day.diff(nowDay, 's') >= 0 ?
+                           <span className="progress"><i className="fa-solid fa-spinner"></i></span> :
+                           <span className="attantion">
+                              <i className="fa-solid fa-triangle-exclamation"></i>
+                           </span>
                   }
                </span>
-               <button onClick={removeHandler}>remove {index}</button>
-               <button className={styles.edit} onClick={showModalHandler}>Edit</button>
+            </div>
+            <div className={styles.body}>
+               <p className={styles.desc}>{todo.description}</p>
+            </div>
+            <div className={styles.footer}>
+               {todo.fileUrl ?
+
+                  <a href={todo?.fileUrl} className={styles.file}> File  </a>
+
+                  : null}
+               {todo.fileUrl ? <span>|</span> : null}
+               <span className={styles.endDate}>{dayjs(day, 'DD MMM. YYYY').format('LL')} </span>
+            </div>
+         </div>
+         <div className={styles.editWrapper}>
+            <div className={styles.controls}>
+               <button className={styles.check}
+                  onClick={() => setStatus(!status)}>
+                  {todo.isComplated ?
+                     <i className="fa-solid fa-check"></i>
+                     : null}
+               </button>
+               <button onClick={removeHandler} className="remove"><i className="fa-solid fa-trash"></i> </button>
+               <button className="edit" onClick={showModalHandler}><i className="fa-solid fa-pen"></i></button>
             </div>
          </div>
          {showModal ?
-            <Modal itemId={todo.id} todo={todo} />
+            <Modal itemId={todo.id} todo={todo} index={index} show={showModal} />
             : null}
       </li>
    )

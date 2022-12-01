@@ -143,22 +143,22 @@ export const TodoAdd: React.FC<TodoAddProps> = ({ itemId, index }) => {
       state.endDate = newDate;
       state.id = todos[0].id + 1;
       const newTodo = { ...state }
-      delete newTodo.file
+      //delete newTodo.file
       if (state.title == '') {
          console.log(inputTitle?.current?.focus())
          inputTitle?.current?.focus()
          setAddError(true)
       }
       else {
-         writeTodos(newTodo, state.file)
+         writeTodos(newTodo)
       }
    }
 
    return (
       <form className={styles.todoAdd}>
-         <div className={styles.row}>
+         <div className="formRow">
             <label>
-               Названиe <span>*</span>
+               Title <span>*</span>
             </label>
 
             <input type="text" ref={inputTitle} className={addError ? `${styles.title} ${styles.error}` : `${styles.title}`}
@@ -173,9 +173,9 @@ export const TodoAdd: React.FC<TodoAddProps> = ({ itemId, index }) => {
                }
                value={state.title} />
          </div>
-         <div className={styles.row}>
+         <div className="formRow">
             <label>
-               Описание
+               Description
             </label>
             <input type="text" onChange={(el) => {
                dispatch({
@@ -186,9 +186,9 @@ export const TodoAdd: React.FC<TodoAddProps> = ({ itemId, index }) => {
                })
             }} value={state.description} />
          </div>
-         <div className={styles.row}>
+         <div className="formRow">
             <label>
-               Прикрепить файл
+               Insert file
             </label>
             <input type="file"
                onChange={(el) => {
@@ -203,9 +203,9 @@ export const TodoAdd: React.FC<TodoAddProps> = ({ itemId, index }) => {
             //value={state.fileUrl}
             />
          </div>
-         <div className={styles.row}>
+         <div className="formRow">
             <label>
-               Дата завершения
+               End date
             </label>
 
             <select value={state.date}
@@ -265,7 +265,10 @@ export const TodoAdd: React.FC<TodoAddProps> = ({ itemId, index }) => {
                })()}
             </select>
          </div>
-         <button ref={submitButton} className="todoAdd__button" onClick={clickHandler} disabled={addError}> Add </button>
+         <div className="formRow t-center">
+            <button ref={submitButton} className="button" onClick={clickHandler} disabled={addError} > Add </button>
+         </div>
+
       </form>
 
    )

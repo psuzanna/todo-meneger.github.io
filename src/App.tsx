@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import logo from './logo.svg';
+import logo from './logo.png';
+import './Reset.scss';
 import './Global.scss';
+
 import { GlobalContext, Todo, State } from './components/GlobalContext/GlobalContext'
 import { TodoList } from './components/TodoList/TodoList';
 import { TodoAdd } from './components/TodoAdd/TodoAdd';
@@ -8,6 +10,7 @@ import { validTodo } from './help.functions';
 import { getDatabase, ref, set, child, get, push, update } from "firebase/database";
 import { getStorage, ref as refS, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import { storage } from './firebase';
+import { TodoHead } from './components/TodoHead/TodoHead';
 
 
 
@@ -49,8 +52,8 @@ const App = () => {
 
 
   /* Добавить задание */
-  const writeTodos = (addTodo: Todo, file: FileList) => {
-    const { id, title, description, endDate, fileUrl, isComplated } = { ...addTodo }
+  const writeTodos = (addTodo: Todo) => {
+    const { id, title, description, endDate, fileUrl, isComplated, file } = { ...addTodo }
     const db = getDatabase();
     const data = {
       id: id,
@@ -58,7 +61,8 @@ const App = () => {
       description: description,
       endDate: endDate,
       fileUrl: '',
-      isComplated: false
+      isComplated: false,
+
     }
     if (file) {
       uploadFile(file, (fileUrlFb: string) => {
@@ -120,18 +124,18 @@ const App = () => {
     )
   };
 
-  const updateTodo = (editTodo: Todo, file: FileList) => {
+  const updateTodo = (editTodo: Todo) => {
     const db = getDatabase();
-    let fileUrlFb = '';
-    const { id, title, description, endDate, fileUrl, isComplated } = { ...editTodo }
+    const { id, title, description, endDate, fileUrl, isComplated, file } = { ...editTodo }
     console.log(editTodo, 'update');
     const todoData = {
       id: id,
       title: title,
       description: description,
       endDate: endDate,
-      fileUrl: '',
-      isComplated: isComplated
+      fileUrl: fileUrl,
+      isComplated: isComplated,
+
     };
     //const newTodoKey = push(child(ref(db), 'todos')).key;
     if (file) {
@@ -140,13 +144,7 @@ const App = () => {
 
         set(ref(db, 'todos/' + id), { ...todoData, fileUrl: fileUrlFb })
           .then(() => {
-            /*const newTodos = [
-              ...todos,
-              {
-                ...todoData, fileUrl: fileUrlFb
-              }
-            ]*/
-            //setTodos(newTodos)
+
             async function asyncTodos() {
               const todoDB = await getTodos()
               setTodos(validTodo(todoDB))
@@ -161,10 +159,6 @@ const App = () => {
     else {
       set(ref(db, 'todos/' + id), { ...todoData })
         .then(() => {
-          /*const newTodos = [
-            ...todos.filter(item => item.id != id), todoData
-          ]*/
-          //setTodos(newTodos)
           async function asyncTodos() {
             const todoDB = await getTodos()
             setTodos(validTodo(todoDB))
@@ -201,7 +195,7 @@ const App = () => {
   return (
     <GlobalContext.Provider value={{ todos, setTodos, writeTodos, updateTodo, removeTodo }}>
       <div className="App" >
-        <TodoAdd itemId={-1} index={-1} />
+        <TodoHead />
         <TodoList />
       </div>
     </GlobalContext.Provider>
