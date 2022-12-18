@@ -1,15 +1,16 @@
 {
   "files": {
-    "main.css": "/static/css/main.55d35456.css",
-    "main.js": "/static/js/main.f347ddab.js",
-    "static/js/787.63e47474.chunk.js": "/static/js/787.63e47474.chunk.js",
-    "index.html": "/index.html",
-    "main.55d35456.css.map": "/static/css/main.55d35456.css.map",
-    "main.f347ddab.js.map": "/static/js/main.f347ddab.js.map",
-    "787.63e47474.chunk.js.map": "/static/js/787.63e47474.chunk.js.map"
+    "main.css": "/todo-meneger.github.io/static/css/main.197fab53.css",
+    "main.js": "/todo-meneger.github.io/static/js/main.9a92664d.js",
+    "static/js/787.63e47474.chunk.js": "/todo-meneger.github.io/static/js/787.63e47474.chunk.js",
+    "static/media/logo.png": "/todo-meneger.github.io/static/media/logo.b556012ea0cc6bb3b6f2.png",
+    "index.html": "/todo-meneger.github.io/index.html",
+    "main.197fab53.css.map": "/todo-meneger.github.io/static/css/main.197fab53.css.map",
+    "main.9a92664d.js.map": "/todo-meneger.github.io/static/js/main.9a92664d.js.map",
+    "787.63e47474.chunk.js.map": "/todo-meneger.github.io/static/js/787.63e47474.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.55d35456.css",
-    "static/js/main.f347ddab.js"
+    "static/css/main.197fab53.css",
+    "static/js/main.9a92664d.js"
   ]
 }
